@@ -1,6 +1,6 @@
 ## 组件化
 
-* 对组件化的理解
+* **对组件化的理解**
 
 	* 组件的封装
 
@@ -11,7 +11,7 @@
 
 		* props传递
 		* 复用
-* JSX本质是什么
+* **JSX本质是什么**
 
 	* JSX语法
 
@@ -34,7 +34,7 @@
 		* React已经将它作为一个独立标准开放，其他项目也可用
 		* React.createElement是可以自定义修改的
 		* 说明：本身功能已经完备；和其他标准兼容和扩展性没问题
-* JSX和vdom的关系
+* **JSX和vdom的关系**
 
 	* 分析：为何需要vdom
 
@@ -56,7 +56,7 @@
 		* 因此Input和List定义的时候必须声明render函数
 		* 根据props初始化实例，然后执行实例的render函数
 		* render函数返回的还是vnode对象
-* setState的过程
+* **setState的过程**
 
 	* setState的异步（setState为何需要异步）
 
@@ -74,7 +74,7 @@
 		* 执行renderComponent会重新执行实例的render
 		* render函数返回newVnode，然后拿到preVnode
 		* 执行patch（preVnode，newVnode）
-* React和vue的认识
+* **React和vue的认识**
 
 	* 两者的本质区别
 
