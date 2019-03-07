@@ -120,9 +120,74 @@
 ## 原型和原型链
 
 * 如何准确判断一个变量是数组类型
+
+	```js
+	 var arr = []
+    console.log(arr instanceof Array,11)  //true 11
+    console.log(typeof arr,12) //object 12
+    ```
+    
 * 写一个原型链继承的例子
+
+	```js
+	<!--最基础的-->
+    function Animal(){
+        this.eat = function(){
+            console.log('animal eat')
+        }
+    }
+    function Dog(){
+        this.bark = function(){
+            console.log('dog bark')
+        }
+    }
+    Dog.prototype = new Animal()
+    var dog = new Dog()
+    
+    <!--封装DOM查询的例子-->
+    function Elem(id){
+        this.elem = document.getElementById(id)
+    }
+
+
+    Elem.prototype.html = function(val){
+        var elem = this.elem
+        if(val){
+            elem.innerHTML = val
+            return this //链式操作 为了下面的可以连续操作 returnthis，如果不return则不可以进行链式操作
+        }else{
+            return elem.innerHTML
+        }
+    }
+
+    Elem.prototype.on = function(type,fn){
+        var elem = this.elem
+        elem.addEventListener(type,fn)
+    }
+    var div1 = new Elem('abTest')
+    console.log(div1.html())
+    // div1.html('<p>hello fengyingxiao</p>')
+    // div1.on('click',function(){
+    //     alert('成功了')
+    // })
+    //下面就是链式操作
+    div1.html('<p>hello fengyingxiao</p>').on('click',function(){
+        alert('chenggongle')
+    })
+
+	```
+	
 * 描述new一个对象的过程
+
+	* 创建一个新对象
+	* this指向这个新对象
+	* 执行代码，即对this赋值
+	* 返回this
 * zepto或其他框架源码中如何使用原型链
+
+	* 阅读源码可以高效提高技能的方式
+	* **慕课网搜索“zepto设计和源码分析”（免费的，两三个小时）**
+	
 
 * **构造函数**
 
@@ -191,4 +256,112 @@
         }
 	```
 * **原型链**
+
+	```js
+	//构造函数
+        function Foo(name,age){
+            this.name = name
+        }
+        Foo.prototype.alertName = function(){
+            alert(this.name)
+        }
+        //创建示例
+        var f = new Foo('zhangsan')
+        f.printName = function(){
+            console.log(this.name)
+        }
+
+        f.printName()
+        f.alertName()
+        f.toString() //要去f.__proto__.__proto__中查找
+	```
 * **instanceof**
+
+	用于判断引用类型属于哪个构造函数的方法
+	
+	* f instanceof Foo的判断逻辑是：
+	* f的__proto__一层一层往上，能否对应到Foo.prototype
+	* 再试着判断 f instanceof Object
+
+## 作用域和闭包
+
+```js
+fn()//不会报错
+function fn(){
+//    声明
+}
+    
+fn1() //会报错，因为fn1还没有出来
+var fn1 = function(){
+//    函数表达式
+}
+
+console.log(a) //undefined
+var a = 100
+
+fn2('zhangsan')
+function fn2(name){
+    age = 20
+    console.log(name,age) //zhangsan 20
+    var age
+    bar(100)
+    function bar(num){
+        console.log(num) //100
+    }
+}
+```
+
+* 说一下对变量提升的理解
+* 说明this几种不同的使用场景
+* 创建10个<a></a>标签，点击的时候弹出来对应的序号
+* 如何理解作用域
+* 实际开发中闭包的应用
+
+* **执行上下文**
+
+	* 范围：一段全局或者一个函数
+	* 全局：变量定义，函数声明
+	* 函数：变量定义，函数声明、this、arguments
+	* **一定要注意函数声明和函数表达式的区别**
+
+	```js
+	console.log(a) //undefined
+	var a = 100
+	
+	fn2('zhangsan')
+	function fn2(name){
+	    age = 20
+	    console.log(name,age) //zhangsan 20
+	    var age
+	    bar(100)
+	    function bar(num){
+	        console.log(num) //100
+	    }
+	}
+
+	```
+	
+* **this**
+
+	* this要在执行时才能确认值，定义时无法确认
+
+	```js
+	var a = {
+        name:'A',
+        fn:function(){
+            console.log(this)
+            console.log(this.name)
+        }
+    }
+    a.fn() //{name: "A", fn: ƒ} A
+    a.fn.call({name:'B'}) //{name: "B"} B
+    var fn1 = a.fn
+    fn1() //this此时指向的是window this===window
+	```
+	* 作为构造函数执行
+	* 作为对象属性执行
+	* 作为普通函数执行
+	* call apply bind
+* **作用域**
+* **作用域链**
+* **闭包**
