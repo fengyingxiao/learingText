@@ -948,28 +948,266 @@ function fn2(name){
 
 	* webstorm插件
 * git（代码版本管理，多人协作开发）
-* JS模块化
-* 打包工具
-* 上线回滚的流程
+
+	* git和linux是一个作者
+	* 常用Git命令
 	
+       * git status
+		* git add .
+		* git checkout xxx
+		* git commit -m "xxx"
+		* git push origin master (master是分支名，如果dev是分支名，则就是git push origin dev)
+		* git pull origin master
+		* git branch (查看分支)
+		* git checkout -b xxx(创建新分支) /git checkout xxx(转换到已有的分支)
+		* git merge xxx (合并分支)（在master分支上，git merge dev,就是将dev分支合并到master分支上）
+* JS模块化
 
+	* 不使用模块化的情况
 
+		* 全局变量会污染
+		* 加载顺序决定着是否可以引用成功
+	* 使用模块化
+	* AMD 
 
+		* require.js
+		* 全局define函数
+		* 全局require函数
+		* 依赖JS会自动，异步加载
 
+		```js
+		<!--require.html-->
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+		    <meta charset="UTF-8">
+		    <title>requireJSAMDddd</title>
+		</head>
+		<body>
+		    <p>AMD Test</p>
+		    <script data-main="./main.js" src="https://cdn.bootcss.com/require.js/2.3.3/require.min.js"></script>
+		</body>
+		</html>
+		
+		<!--main.js-->
+		require(['./a.js'],function(a){
+		    var date = new Date()
+		    console.log('1111')
+		     a.printDate(date)
+		})
+		
+		<!--a.js-->
+		define(['./a-util.js'],function(aUtil){
+		    var a = {
+		        printDate:function(date){
+		            console.log(aUtil.aGetFormatDate(date))
+		        }
+		    }
+		    return a
+		})
+		
+		<!--a-util.js-->
+		define(['./util.js'],function(util){
+		    var aUtil = {
+		        aGetFormatDate:function(date){
+		            return util.getFormatDate(date,2)
+		        }
+		    }
+		    return aUtil
+		})
+		
+		<!--util.js-->
+		define(function (){
+		    var util = {
+		        getFormatDate: function(date,type){
+		            if(type === 1){
+		                return '2017-09-90'
+		            }
+		            if(type ===2){
+		                return '2017年'
+		            }
+		        }
+		    }
+		    return util
+		})
+		```
+	* CommonJS
 
+		* nodejs模块化规范，现在被大量用于前端，原因：
+		* 前端开发依赖的插件和库，都可以从npm中获取
+		* 构建工具的高度自动化，使得使用npm的成本非常低
+		* CommonJs不会异步加载JS，而是同步一次性加载出来；CommonJS设置以后也可以使用异步
 
+	* AMD和CommonJS的使用场景
 
+		* 需要异步加载JS，使用AMD
+		* 使用了npm以后建议使用CommonJS
 
+		
+* 打包工具
 
+	* **webpack**
 
+		* 在目录下 npm init,然后目录下就会出现一个package.json
+		* npm install webpack --save-dev (**save意思是保存起来，dev是只用于开发环境**)
+		* npm i jquery --save
+		* npm uninstall xxx (卸载安装的某个环境)
+		* 代码压缩：在webpack.config.js里面增加一个plugin，可以去官网查
 
+		具体详细代码可以看learning/webpack这个文件夹
 
+		```js
+		<!--webpack.config.js-->
+		var path = require('path')
+		var webpack = require('webpack')
+		
+		module.exports = {
+		    context: path.resolve(__dirname,'./src'), //要去解决找到一个src的文件
+		    entry:{
+		        app:'./app.js' //入口是app。js
+		    },
+		    output:{
+		        path:path.resolve(__dirname,'./dist') ,//输出到dist目录
+		        filename:'bundle.js'
+		    },
+		    plugins:[
+		        new webpack.optimize.UglifyJsPlugin()
+		    ]
+		}
+		```
+* 上线回滚的流程
 
+	
+	* 上线和回滚的基本流程
 
+		* 由专门的工具或者系统完成，无需关心细节
+		* 将当前服务器的代码全部打包并记录版本号，备份
+		* 将新代码提交覆盖到线上服务器，产生新的版本号
+		* 如果出现问题 则将最新的版本号打包备份，将上一个版本解压，覆盖到线上服务器，并产生新的版本号
+	* linux基本命令
 
+		* 服务器使用linux居多，server版，只有命令行
+		* 测试环境要匹配线上环境，因此也是linux
 
+		* ssh name@server 首先要去登陆账号
+		* mkdir a (创建a文件夹)
+		* ls 来看a下面的文件名字
+		* ll 是看a下面的文件
+		* pwd 是看当前文件的目录
+		* cd ../ 返回上一级目录
+		* rm -rf a (删除a文件夹)
+		* cp a.js a1.js 拷贝一个js
+		* mv a1.js src/a1.js 移动a1.js到src里面去
+		* rm a.js 删除一个文件
+		* vi编辑器
 
+			* vim a.js(创建a.js,并且在命令行中编辑；或者是vi a.js)
+			* 然后在命令行中输入i，这样就可以在a.js里面随意写东西了
+			* 写完 点击esc，这样就不能写了，然后:wq保存并退出，如果只是保存就:w,如果只是退出就:q
+			* cat a.js可以在命令行中查看a.js的内容
+			* tail a.js是查看文件的尾部
+			* head a.js是查看文件的头部
+			* head -n 1 a.js 查看a.js的第一行
+			* tail -n 2 a.js 查看a.js的后两行
+			* grep '2' a.js 是在a.js里面搜索2
 
+## 关于运行环境
 
+* **页面加载过程**
 
+	* 从输入url到得到html的详细过程
+	* window.onload和DOMContentLoaded的区别
 
+		```js
+		window.addEventListener('load',function(){
+			//页面的全部资源加载完才会执行，包括图片，视频等
+		})
+		document.addEventListener('DOMContentLoaded',function(){
+			//DOM 渲染完即可执行，此时图片、视频还可能没有加载完
+		})
+		```
+
+	
+	* **加载资源的形式**
+
+		* 输入url或跳转页面加载html
+		* 加载html中的静态资源 ，比如script标签引入的js
+	* 加载一个资源的过程
+
+		* 浏览器根据DNS服务器得到域名的IP地址
+		* 向这个IP的机器发送http请求
+		* 服务器收到、处理并返回http请求
+		* 浏览器得到返回内容
+	* 浏览器渲染页面的过程
+
+		* 根据HTML结构生成DOM Tree
+		* 根据CSS生成CSSOM
+		* 将DOM和CSSOM整合形成RenderTree
+		* 根据RenderTree开始渲染和展示
+		* 遇到script时，会执行并阻塞渲染
+
+		* 为何把css放在head中？因为浏览器可以先去知道css规则，渲染完以后后面的dom结构就可以按规则去渲染
+		* 为何把script放到body的即将结束的位置？这样不会阻塞上面的结构的渲染，可以让页面更快的出来。
+		
+* **性能优化**
+
+	* 多使用内存、缓存或者其他方法
+	* 减少CPU计算、减少网络请求
+	* 从哪里入手
+
+		* 加载页面和静态资源
+
+			* 静态资源的压缩合并
+			* 静态资源缓存
+			* 使用CDN让资源加载更快，因为CDN是不同区域的一个
+			* 使用SSR后端渲染，数据直接输出到html中
+		* 页面渲染
+
+			* CSS放前面，JS放后面
+			* 懒加载（图片懒加载，下拉加载更多）
+
+				```js
+				<img id = "img1" src="preview.png" data-realsrc="abc.png" />
+			    <script>
+			        var img1 = document.getElementById('img1')
+			        img1.src = img1.getAttribute('data-realsrc')
+			    </script>
+				```
+			* 减少DOM查询，对DOM查询做缓存
+			* 减少DOM操作，多个操作尽量合并在一起执行
+			* 事件节流
+
+				```js
+				var textarea = document.getElementById('textarea')
+		        var timeoutId
+		        textarea.addEventListener('keyup',function(){
+		            if(timeoutId){
+		                clearTimeout(timeoutId)
+		            }
+		            timeoutId = setTimeout(function(){
+		                //触发change事件
+		            },100)
+		        })
+				```
+			* 尽早执行操作  
+* **安全性**
+
+	* 场景的前端安全问题有哪些
+
+	
+		* Xss跨站请求攻击
+
+			* 比如在某某博客写一篇文章，同时偷偷插入一段script代码
+			* 攻击代码中，获取cookie（自己的账户信息），发送自己的服务器
+			* 有人查看博客内容，就会把查看者的cookie发送到攻击者的服务器
+
+			* **前端替换关键字，例如替换<为&lt等；但更建议后端替换**
+			
+		* XSRF跨站请求伪造
+
+			* 你已登陆一个购物网站，正在浏览商品
+			* 该网站付费接口是xxx.com/pay?id=100,但是没有任何验证
+			* 然后你收到一封邮件，隐藏着img src=xxx.com/pay?id=100
+			* 你查看邮件的时候，就已经悄悄的付费购买了
+
+			* 解决方法：增加验证流程，如输入指纹，密码，短信验证码等
