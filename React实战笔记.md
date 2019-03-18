@@ -1089,7 +1089,7 @@ hello(...arr)
 	```
 	这个意思为如果你去找一个没有的路径，那么他就会跳转到Test组件
 	
-###React-router4和redux配合
+### React-router4和redux配合
 
 * 复杂redux应用，多个reducer，用combineReducers合并
 * Redirect组件跳转
@@ -1345,6 +1345,121 @@ class Dashboard extends  React.Component{
 
 ```
 
+## 前后端连调
+
+### 使用axios发送异步请求
+
+* 如何发送，端口不一致，使用proxy配置转发
+* axios拦截器，统一loading处理
+* redux里使用异步数据，渲染页面
+
+### axios
+
+* npm install axios --save
+* 然后在package.json里面添加请求的地址,在babel下面添加
+
+	```js
+	"proxy": "http://localhost:9093",
+	```
+* 然后在Auth.js里面引用axios，用get方法去请求server里面得到的数据；
+
+	```js
+	import axios from 'axios'
+	
+	
+	componentDidMount(){
+        axios.get('/data')
+            .then(res=>{
+                console.log(res)
+                //这样就会打印到从server里面请求的内容
+            })
+    }
+	```
+	
+* 如果用redux做，那么则在Auth.js里面添加
+
+	```js
+	import axios from 'axios'
+	const USER_DATA = 'USER_DATA'
+	const initState = {
+	    isAuth:false,
+	    user:'李云龙',
+	    age:20
+	}
+	
+	export function auth(state=initState,action){
+	    console.log(state,action)
+	    switch (action.type){
+	        case LOGIN:
+	            return {...state,isAuth:true}
+	        case LOGOUT:
+	            return {...state,isAuth:false}
+	        case USER_DATA:
+	            return {...state,user:action.payload.user,age:action.payload.age}
+	        default:
+	            return state
+	    }
+	}
+	
+	export function getUserData(){
+	    //dispatch用来通知数据修改
+	    return dispatch=>{
+	        axios.get('/data')
+	                .then(res=>{
+	                    if(res.status === 200){
+	                        dispatch(userData(res.data[0]))
+	                    }
+	                    console.log(res)
+	                })
+	    }
+	}
+	export function userData(data) {
+	    return {
+	        type: USER_DATA,
+	        payload:data
+	    }
+	}
+	```
+	
+* axios的拦截器 ，主要是为了展示加载的时候的动画效果;新建config.js文件，然后在config文件中写： 
+
+	```js
+	import axios from 'axios'
+	import {Toast} from 'antd-mobile'
+	//拦截请求
+	axios.interceptors.request.use(function(config){
+	    Toast.loading('加载中',0)
+	    return config
+	})
+	//拦截响应
+	axios.interceptors.response.use(function(config){
+	    setTimeout(()=>{
+	        Toast.hide()
+	    },2000)
+	
+	    return config
+	})
+	```
+	在index.js里面引入config.js
+
+
+## 登陆和注册
+
+### 页面文件结构
+* 骨架结构实现
+
+	* 组件放在Component文件夹下面
+	* 页面放在Container文件夹下面
+	* 页面入口处获取用户信息，决定跳转到哪个页面
+
+### web开发模式
+* 基于cookie用户验证
+
+	* express依赖cookie-parse，需要npm install cookie-parser --save安装
+	* cookie类似于一张身份卡，登陆后服务器端返回，你带着cookie就可以访问受限资源
+	* 页面cookie的管理浏览器会自动处理
+
+### 前后端实现
 
 	
 	

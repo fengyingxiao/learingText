@@ -5,8 +5,14 @@ import {createStore,applyMiddleware,compose} from 'redux'
 import reducers from './reducers'
 import thunk from 'redux-thunk'
 import {Provider} from 'react-redux'
-import Auth from './Auth'
-import Dashboard from './Dashboard'
+import Login from './container/login/login'
+import Register from './container/register/register'
+import AuthRoute from './component/authroute/authroute'
+import BossInfo from './container/bossinfo/bossinfo'
+import GeniusInfo from './container/geniusinfo/geniusinfo'
+import Dashboard from './component/dashboard/dashboard'
+import './config'
+import './index.css'
 import {
     BrowserRouter,
     Route,
@@ -25,16 +31,24 @@ const store = createStore(reducers,compose(
 //页面
 
 
+//boss genius me msg四个页面
+//如果route里面只有component，没有path，切外层有switch包裹，那就意味着 如果跳转到switch里面route没有的路径，就会跳转到component
+//如果route里面只有component，没有path，切外层没有switch包裹，则就意味着无论跳转到哪个页面 下面都会有component
 ReactDom.render(
     (
         <Provider store={store}>
             <BrowserRouter>
-                <Switch>
-                    {/* 只渲染命中的第一个Route */}
-                    <Route path='/login'  component={Auth}></Route>
-                    <Route path='/dashboard' component={Dashboard}></Route>
-                    <Redirect to="/dashboard" />
-                </Switch>
+                <div>
+                    <AuthRoute></AuthRoute>
+                    <Switch>
+                        <Route path='/bossinfo' component={BossInfo} ></Route>
+                        <Route path='/geniusinfo' component={GeniusInfo} ></Route>
+                        <Route path = '/login' component={Login} />
+                        <Route path = '/register' component={Register} />
+                        <Route component={Dashboard}></Route>
+                    </Switch>
+
+                </div>
             </BrowserRouter>
         </Provider>
     ),
@@ -42,86 +56,7 @@ ReactDom.render(
 )
 
 
-//
-// import {createStore} from 'redux'
-//
-// //通过reducer建立
-// //根据老大state和action生成新的state
-// function counter(state=0,action){
-//     switch(action.type){
-//         case '加机关枪':
-//             return state+1
-//         case '减机关枪':
-//             return state -1
-//         default:
-//             return 10
-//     }
-// }
-//
-// //新建store
-// const store  = createStore(counter)
-// const init  = store.getState()
-// console.log(init)
-// function listener(){
-//     const current = store.getState()
-//     console.log(`现在有机枪${current}把`)
-// }
-// store.subscribe(listener)
-// //派发事件
-// store.dispatch({type:'加机关枪'})
 
-// import {counter ,addGun,removeGun,addGunAsync} from './index.redux'
-// const reduxDevtools = window.devToolsExtension? window.devToolsExtension():()=>{}
-// // const store = createStore(counter,applyMiddleware(thunk))
-// const store = createStore(counter,compose(
-//     applyMiddleware(thunk),
-//     reduxDevtools
-// ))
-// import {createStore,applyMiddleware,compose} from 'redux'
-// import thunk from 'redux-thunk'
-// import React from 'react'
-// import ReactDom from 'react-dom'
-// import {createStore,applyMiddleware} from 'redux'
-// import thunk from 'redux-thunk'
-// import {counter,addGun,removeGun,addGunAsync} from './index.redux'
-//
-// import App from './App'
-// const store = createStore(counter, applyMiddleware(thunk))
-// function render(){
-//     ReactDom.render(
-//         <App store={store} addGun={addGun} removeGun ={removeGun} addGunAsync={addGunAsync} />,document.getElementById('root'))
-// }
-// render()
-// store.subscribe(render)
-
-//store={store} addGun={addGun} removeGun={removeGun} addGunAsync={addGunAsync}
-// store.subscribe(render)
-//
-// compose
-
-
-
-//
-// import React from 'react'
-// import ReactDom from 'react-dom'
-// import {createStore,applyMiddleware} from 'redux'
-// import thunk from 'redux-thunk'
-// import {Provider} from 'react-redux'
-// import App from './App'
-// import {counter} from './index.redux'
-// // const reduxDevtools = window.devToolsExtension? window.devToolsExtension():()=>{}
-// const store = createStore(counter,applyMiddleware(thunk))
-// // const store = createStore(counter,compose(
-// //     applyMiddleware(thunk),
-// //     reduxDevtools
-// // ))
-//
-// ReactDom.render(
-//     (<Provider store={store}>
-//         <App />
-//     </Provider>),
-//     document.getElementById('root')
-// )
 
 
 
