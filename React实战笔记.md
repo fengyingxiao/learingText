@@ -1461,6 +1461,95 @@ class Dashboard extends  React.Component{
 
 ### 前后端实现
 
+### 高阶函数
+
+```js
+function hello(){
+    console.log('hello imooc I love React')
+}
+function WrapperHello(fn){
+    return function(){
+        console.log('before say hello')
+        fn()
+        console.log('after say hello')
+    }
+}
+
+hello = WrapperHello(hello)
+hello() //before say hello  hello imooc I love React    after say hello
+```
+分为属性代理和反向继承，下面介绍的是属性代理
+
+```js
+class Hello extends React.Component{
+    render(){
+        return <h2>hello imooc Ilove imooc</h2>
+    }
+}
+function WrapperHello(Comp){
+    class WrapComp extends React.Component{
+        render(){
+            return(
+                <div>
+                    <p>这是HO高阶组件特有的元素</p>
+                    <Comp {...this.props}></Comp>
+                </div>
+            )
+
+        }
+    }
+    return WrapComp
+}
+
+Hello = WrapperHello(Hello)
+```
+上述代码也可以用下面的@符号，是一样的效果
+
+```js
+function WrapperHello(Comp){
+    class WrapComp extends React.Component{
+        render(){
+            return(
+                <div>
+                    <p>这是HO高阶组件特有的元素</p>
+                    <Comp {...this.props}></Comp>
+                </div>
+            )
+
+        }
+    }
+    return WrapComp
+}
+@WrapperHello
+class Hello extends React.Component{
+    render(){
+        return <h2>hello imooc Ilove imooc</h2>
+    }
+}
+```
+
+反向继承：
+
+```js
+function WrapperHello(Comp){
+    class WrapComp extends Comp{
+        componentDidMount(){
+            console.log('高阶组件新增的生命周期， 加载完成')
+        }
+        render(){
+            return <Comp/>
+        }
+    }
+    return WrapComp
+}
+@WrapperHello
+class Hello extends React.Component{
+    render(){
+        return <h2>hello imooc Ilove imooc</h2>
+    }
+}
+```
+
 	
 	
 	

@@ -4,36 +4,64 @@ import {List,InputItem,WingBlank,WhiteSpace,Button} from 'antd-mobile'
 import {connect} from 'react-redux'
 import {login} from '../../redux/user.redux'
 import {Redirect} from 'react-router-dom'
+import imoocForm from '../../component/imooc-form/imooc-form'
+// function hello(){
+//     console.log('hello imooc I love React')
+// }
+// function WrapperHello(fn){
+//     return function(){
+//         console.log('before say hello')
+//         fn()
+//         console.log('after say hello')
+//     }
+// }
+//
+// hello = WrapperHello(hello)
+// hello() //before say hello  hello imooc I love React    after say hello
+// function WrapperHello(Comp){
+//     class WrapComp extends Comp{
+//         componentDidMount(){
+//             console.log('高阶组件新增的生命周期， 加载完成')
+//         }
+//         render(){
+//             return <Comp/>
+//         }
+//     }
+//     return WrapComp
+// }
+// @WrapperHello
+// class Hello extends React.Component{
+//     render(){
+//         return <h2>hello imooc Ilove imooc</h2>
+//     }
+// }
+
+
+// Hello = WrapperHello(Hello)
+
 @connect(
     state=>state.user,
     {login}
 )
+    @imoocForm
 class Login extends React.Component{
     constructor(props){
         super(props)
-        this.state = {
-            user:'',
-            pwd:''
-        }
+
         this.register = this.register.bind(this)
     }
     register(){
         console.log(this.props,10)
         this.props.history.push('/register')
     }
-    handleChange=(key,val)=>{
-        console.log(key,val)
-        this.setState({
-            [key]:val
-        })
-    }
+
     handleLogin=()=>{
-        this.props.login(this.state)
+        this.props.login(this.props.state)
     }
     render(){
         return(
             <div>
-                {this.props.redirectTo?
+                {(this.props.redirectTo&&this.props.redirectTo!='/login')?
                     <Redirect to={this.props.redirectTo} />
                     : null
                 }
@@ -47,12 +75,12 @@ class Login extends React.Component{
                                 :null
                         }
                         <InputItem
-                            onChange = {(v)=>this.handleChange('user',v)}
+                            onChange = {(v)=>this.props.handleChange('user',v)}
                         >用户</InputItem>
                         <WhiteSpace />
                         <InputItem
                             type='password'
-                            onChange = {(v)=>this.handleChange('pwd',v)}
+                            onChange = {(v)=>this.props.handleChange('pwd',v)}
                         >密码</InputItem>
                         <WhiteSpace />
                     </List>
