@@ -51,16 +51,97 @@
 //     })
 // })
 
-const express = require('express')
-const bodyParser = require('body-parser')
-const cookieParser = require('cookie-parser')
-const userRouter = require('./user')
+import express from 'express'
+import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
+import model from './module'
+const Chat = model.getModel('chat')
+import path from 'path'
+import csshook from 'css-modules-require-hook/preset' // import hook before routes
+import assethook from 'asset-require-hook'
+assethook({
+    extensions:['png']
+})
+import React from 'react'
+import {Provider} from 'react-redux'
+import {createStore,applyMiddleware,compose} from 'redux'
+import reducers from '../src/reducers'
+import thunk from 'redux-thunk'
+import App from '../src/app'
+import {
+    StaticRouter
+} from 'react-router-dom'
+import {renderToString} from 'react-dom/server'
+import staticPath from '../build/asset-manifest'
+
 const app = express()
 
+//work with express
+const server = require('http').Server(app)
+const io = require('socket.io')(server)
+io.on('connection',function(socket){
+
+    socket.on('sendmsg',function(data){
+        // console.log(data)
+        // io.emit('recvmsg',data)
+        console.log(data)
+        const {from,to,msg} = data
+        const chatid = [from,to].sort().join('_')
+        const create_time = new Date().getTime()
+        console.log(create_time,73)
+        Chat.create({chatid,from,to,content:msg},function(err,doc){
+
+            io.emit('recvmsg',Object.assign({},doc._doc))
+        })
+
+    })
+})
+
+const userRouter = require('./user')
 app.use(cookieParser())
 app.use(bodyParser.json())
 app.use('/user',userRouter)
+app.use(function(req,res,next){
+    if(req.url.startsWith('/user/')||req.url.startsWith('/static/')){
+        return next()
+    }
+    const store = createStore(reducers,compose(
+        applyMiddleware(thunk)
+    ))
+    let context = {}
+    const markup = renderToString(
+        <Provider store={store}>
+            <StaticRouter
+                location ={req.url}
+                context={context}
+            >
+                <App></App>
+            </StaticRouter>
+        </Provider>
+    )
 
-app.listen(9093,function(){
+    const pageHtml = `<!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+            <meta name="theme-color" content="#000000">
+            <title>React App</title>
+            <link rel="stylesheet" href="/${staticPath['main.css']}" />
+          </head>
+          <body>
+            <noscript>
+              You need to enable JavaScript to run this app.
+            </noscript>
+            <div id="root">${markup}</div>
+            <script src="/${staticPath['main.js']}"></script>
+          </body>
+        </html>`
+    // const htmlRes=(<App></App>)
+    res.send(pageHtml)
+    // return res.sendFile(path.resolve('build/index.html'))
+})
+app.use('/',express.static(path.resolve('build')))
+server.listen(9093,function(){
     console.log('Node appp start at port 9093')
 })

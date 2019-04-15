@@ -10,9 +10,7 @@ import {Redirect} from 'react-router-dom'
 )
 
 class User extends React.Component{
-    constructor(props){
-        super(props)
-    }
+
     logout=()=>{
         const alert = Modal.alert
         alert('注销','确认退出登录吗',[

@@ -3,12 +3,52 @@ const utils = require('utility')
 const Router  = express.Router()
 const model = require('./module')
 const User = model.getModel('user')
+const Chat = model.getModel('chat')
 const _filter = {'pwd':0,'__v':0}
+// Chat.remove({},function(e,d){
+//
+// })
 Router.get('/list',function(req,res){
     // User.remove({},function(e,d){}) //清除所有密码
     const {type} = req.query
     User.find({type},function(err,doc){
         return res.json({code:0,data:doc})
+    })
+})
+Router.get('/getmsgList',function(req,res){
+    const user = req.cookies.userid
+    console.log(req.cookies)
+    console.log(user,20)
+    //'$or':[{from:user,to:user}]
+    User.find({},function(e,userdoc){
+        let users = {}
+        userdoc.forEach(v=>{
+            users[v._id] = {name:v.user,avatar:v.avatar}
+        })
+        Chat.find({'$or':[{from:user},{to:user}]},function(err,doc){
+            console.log(doc,27)
+            if(!err){
+                return res.json({code:0,msg:doc,users:users})
+            }
+        })
+
+    })
+
+})
+Router.post('/readmsg',function(req,res){
+    const userid = req.cookies.userid
+    const {from} = req.body
+    console.log(userid ,from)
+    Chat.update(
+        {from,to:userid},
+        {'$set':{read:true}},
+        {'multi':true},
+        function(err,doc){
+        console.log(doc,43)
+        if(!err){
+            return res.json({code:0,num:doc.nModified})
+        }
+        return res.json({code:1,msg:'修改失败'})
     })
 })
 Router.post('/update',function(req,res){

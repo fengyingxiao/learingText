@@ -1461,7 +1461,7 @@ class Dashboard extends  React.Component{
 
 ### 前后端实现
 
-### 高阶函数
+## 高阶函数
 
 ```js
 function hello(){
@@ -1549,6 +1549,224 @@ class Hello extends React.Component{
     }
 }
 ```
+
+## Socket.io基础知识
+
+### Socket.io是什么
+**基于事件的实时双向通信库**
+
+* 基于websocket协议
+* 前后端通过事件进行双向通信
+* 配合express，快速开发实时应用
+
+### Socket.io和ajax区别
+**基于不同的网络协议**
+
+* Ajax基于http协议，单向，实时获取数据只能轮询
+* socket.io基于websocket双向通信协议，后端可以主动推送数据
+* 现代浏览器均支持websocket协议
+
+### Socket.io前后端实战
+
+* Socket.io后端API
+
+**配合express**
+
+	* Io = require('socket.io')(http)
+	* io.on监听事件
+	* io.emit触发事件
+
+* Socket.io前端API
+
+**配合express**
+
+	* import io from 'socket.io-client'
+	* io.on监听事件
+	* io.emit触发事件
+
+* 进入自己的项目，npm install socket.io --save
+* npm install socket.io-client --save
+
+
+
+## React进阶
+
+### React原理
+
+* 虚拟Dom
+* 生命周期
+* setState（异步的）
+
+### Redux原理
+
+### React和Redux常见性能优化策略
+
+* React组件性能优化
+
+	在react网址后面加上/？react_pref，然后在网页的prefmance里面就可以看到性能了，主要看usertiming里面的时间
+
+	* 属性传递优化
+
+	```js
+	<!--判断是否要渲染render里面的-->
+	shouldComponentUpdate(nextProps,nextStates){
+		if(nextProps.title == this.props.title){
+			return false
+		}
+		return true
+	}
+	```
+	immutablejs是facebook提出的，在github上面可以看到，比较属性是否相等非常好用 
+	
+		* npm install immutable --save
+		* import {Map} from 'immutable'
+		* 减少内存使用
+		* 并发安全
+		* 降级项目复杂度
+		* 便于比较复杂数据，制定shouldComponentUpdate方便
+		* 时间旅行功能方便
+		* 函数式编程
+		* 缺点是库的大小，对现有项目侵略比较大，还有一个是seamless-immutable，这个库比较小，但只支持三种内容的判断
+
+	* 多组件优化
+
+	
+		```js
+		import React from 'react'
+		import ProTypes from 'prop-types'
+		
+		//context是全局的，组件里声明，所有子元素可以直接获取；context对数据类型是要求必传的，所以必须要有proTypes
+		class WT extends React.Component{
+		    render(){
+		        return (
+		            <div>
+		                <p>侧边栏</p>
+		                <Little></Little>
+		            </div>
+		        )
+		    }
+		}
+		class Little extends React.Component{
+		    static contextTypes={
+		        user:ProTypes.string
+		    }
+		    render(){
+		        console.log(this.context,12)
+		        return (
+		            <div>
+		                <p>我是地步到宝航过{this.context.user}</p>
+		            </div>
+		        )
+		    }
+		}
+		
+		class Test extends React.Component{
+		    static childContextTypes={
+		        user:ProTypes.string
+		    }
+		    constructor(props){
+		        super(props)
+		        this.state = {
+		            user:'蜗牛'
+		        }
+		    }
+		    //子元素想获取context就会从这个方法里面获取
+		    getChildContext(){
+		        return this.state
+		    }
+		    render(){
+		        return (
+		            <div>
+		                <p>我是{this.state.user}</p>
+		                <WT></WT>
+		            </div>
+		        )
+		    }
+		}
+		
+		export default Test
+		```
+	
+	* key
+* Redux性能优化
+
+	* Reselect可以对数据做一些缓存(gitHub上)
+	* import {createSelector} from 'reselect'
+	
+	```js
+	import {createSelector} from 'reselect'
+	
+	const numSelector = createSelector(
+		state=>state,
+		<!--第二个函数的参数是第一个的返回值-->
+		state=>({num:state*2})
+	)
+	
+	@connect(
+		state=> numSelector(state)
+	)
+	```
+	
+* React同构
+
+	* REact的key值最好不要用index，因为如果数组从前面插入，index都会改变
+
+	
+* React服务端渲染SSR
+
+	服务端渲染介绍
+
+	*  传统服务端渲染，JSP，smaty，jinja2等
+	*  浏览器渲染
+	*  前后同构，首屏服务端渲染
+
+* 项目SSR具体步骤
+
+	SSR实战，build代码后的事情
+	
+	* node使用babel-node配置node里的react环境
+	* 修改客户端代码，抽离App组件，前后端共享
+	* 服务端生成DOM结构，渲染，加载build后的css和js
+
+	
+## eslint代码规范
+
+因为现在js编译器不会有之前不加分号没办法压缩的问题，所以都不用使用分号了
+
+## 项目打包编译
+
+npm run build
+
+* 编译打包后，生成build目录
+* express中间件，拦截路由，手动渲染index.html
+* build设置为静态资源地址
+
+## React服务端渲染SSR实战
+
+SSR实战
+
+* node环境使用babel-node支持jsx(node 原生环境不支持import)
+* 设置css和图片的hook
+* renderToString渲染html
+
+## React16新特性
+
+新版本带来的优化和新功能
+
+* 新的核心算法Fiber
+* Render可以返回数组，字符串
+* 错误处理机制
+* Portals组件
+* 更好更快的服务端渲染
+* 体积更小，MIT协议
+
+新版本更快的流式渲染
+
+* 之前版本的renderToString，解析为字符串
+* 新版本的renderToNodeStream解析为可读的字节流对象
+* 使用ReactDom.hydate取代render
+
+ 
 
 	
 	

@@ -1,7 +1,7 @@
 import React from 'react'
 import {Redirect} from 'react-router-dom'
 import Logo from '../../component/logo/logo'
-import {List,InputItem,Radio,WingBlank,WhiteSpace,Button} from 'antd-mobile'
+import {List,InputItem,Radio,WhiteSpace,Button} from 'antd-mobile'
 import {connect} from 'react-redux'
 import {register} from "../../redux/user.redux";
 import imoocForm from '../../component/imooc-form/imooc-form'
@@ -11,9 +11,7 @@ import imoocForm from '../../component/imooc-form/imooc-form'
 )
 @imoocForm
 class Register extends React.Component{
-    constructor(props){
-        super(props)
-    }
+
     componentDidMount(){
         this.props.handleChange('type','genius')
     }
